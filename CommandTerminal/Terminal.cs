@@ -27,9 +27,9 @@ namespace CommandTerminal
         [SerializeField]
         float ToggleSpeed = 360;
 
-        [SerializeField] string ToggleHotkey      = "`";
-        [SerializeField] string ToggleFullHotkey  = "#`";
-        [SerializeField] int BufferSize           = 512;
+        [SerializeField] internal string ToggleHotkey      = "`";
+        [SerializeField] internal string ToggleFullHotkey  = "#`";
+        [SerializeField] internal int BufferSize           = 512;
 
         [Header("Input")]
         [SerializeField] Font ConsoleFont;
@@ -54,7 +54,7 @@ namespace CommandTerminal
         TextEditor editor_state;
         bool input_fix;
         bool move_cursor;
-        bool initial_open; // Used to focus on TextField when console opens
+        internal bool initial_open; // Used to focus on TextField when console opens
         Rect window;
         float current_open_t;
         float open_target;
@@ -68,10 +68,10 @@ namespace CommandTerminal
         Texture2D background_texture;
         Texture2D input_background_texture;
 
-        public static CommandLog Buffer { get; private set; }
-        public static CommandShell Shell { get; private set; }
-        public static CommandHistory History { get; private set; }
-        public static CommandAutocomplete Autocomplete { get; private set; }
+        public static CommandLog Buffer { get; internal set; }
+        public static CommandShell Shell { get; internal set; }
+        public static CommandHistory History { get; internal set; }
+        public static CommandAutocomplete Autocomplete { get; internal set; }
 
         public static bool IssuedError {
             get { return Shell.IssuedErrorMessage != null; }
@@ -131,24 +131,15 @@ namespace CommandTerminal
             }
         }
 
-        void OnEnable() {
-            Buffer = new CommandLog(BufferSize);
-            Shell = new CommandShell();
-            History = new CommandHistory();
-            Autocomplete = new CommandAutocomplete();
-
-            // Hook Unity log events
-            Application.logMessageReceived += HandleUnityLog;
-        }
-
-        void OnDisable() {
-            Application.logMessageReceived -= HandleUnityLog;
-        }
-
         void Start() {
             if (ConsoleFont == null) {
                 ConsoleFont = Font.CreateDynamicFontFromOSFont("Courier New", 16);
                 Debug.LogWarning("Command Console Warning: Please assign a font.");
+            }
+
+            if (GetComponent<TerminalKeyboardHandler>() == null)
+            {
+                gameObject.AddComponent<TerminalKeyboardHandler>();
             }
 
             command_text = "";
@@ -172,24 +163,22 @@ namespace CommandTerminal
         }
 
         void OnGUI() {
-            if (Event.current.Equals(Event.KeyboardEvent(ToggleHotkey))) {
-                SetState(TerminalState.OpenSmall);
-                initial_open = true;
-            } else if (Event.current.Equals(Event.KeyboardEvent(ToggleFullHotkey))) {
-                SetState(TerminalState.OpenFull);
-                initial_open = true;
-            }
+            // handling of toggle keypress is moved to TerminalKeyboardHandler
+            // in order to be able to disable this component in order to prevent
+            // calls to OnGUI while console is closed, which would otherwise make
+            // unneeded GC allocations which trigger GC.Collect too frequently
 
             if (ShowGUIButtons) {
                 DrawGUIButtons();
             }
 
             if (IsClosed) {
+                enabled = false;
                 return;
             }
 
             HandleOpenness();
-            window = GUILayout.Window(88, window, DrawConsole, "", window_style);
+            window = GUILayout.Window(88, window, DrawConsole, string.Empty, window_style);
         }
 
         void SetupWindow() {
@@ -383,7 +372,7 @@ namespace CommandTerminal
             editor_state.MoveCursorToPosition(new Vector2(999, 999));
         }
 
-        void HandleUnityLog(string message, string stack_trace, LogType type) {
+        internal void HandleUnityLog(string message, string stack_trace, LogType type) {
             Buffer.HandleLog(message, stack_trace, (TerminalLogType)type);
             scroll_position.y = int.MaxValue;
         }
