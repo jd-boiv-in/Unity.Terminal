@@ -1,0 +1,19 @@
+{
+  "name": "com.unity.commandterminal",
+  "version": "1.0.0",
+  "displayName": "Command Terminal",
+  "description": "",
+  "unity": "2019.3",
+  "unityRelease": "5f1",
+  "dependencies": {
+    
+ },
+ "keywords": [
+    "terminal", "console"
+  ],
+  "author": {
+    "name": "stillwwater",
+    "email": "",
+    "url": ""
+  }
+}
