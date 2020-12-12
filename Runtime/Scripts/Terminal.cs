@@ -268,7 +268,7 @@ namespace CommandTerminal
             } else if (Event.current.Equals(Event.KeyboardEvent("down"))) {
                 command_text = History.Next();
 #if UNITY_WEBGL
-            } else if (Event.current.Equals(Event.KeyboardEvent("#insert"))) {
+            } else if (Event.current.type == EventType.KeyUp && Event.current.shift && Event.current.keyCode == KeyCode.Insert) {
                 CopyPasteReader("Terminal", "Paste");
 #endif
             } else if (Event.current.Equals(Event.KeyboardEvent(ToggleHotkey))) {
@@ -405,6 +405,7 @@ namespace CommandTerminal
         public void Paste(string data)
         {
             command_text += data;
+            move_cursor = true;
         }
 
         Color GetLogColor(TerminalLogType type) {
