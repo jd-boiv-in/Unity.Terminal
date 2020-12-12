@@ -59,7 +59,7 @@ namespace CommandTerminal
         float current_open_t;
         float open_target;
         float real_window_size;
-        string command_text;
+        public string command_text;
         string cached_command_text;
         Vector2 scroll_position;
         GUIStyle window_style;
