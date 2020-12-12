@@ -92,7 +92,7 @@ namespace CommandTerminal
         /// Uses reflection to find all RegisterCommand attributes
         /// and adds them to the commands dictionary.
         /// </summary>
-        public void RegisterCommands() {
+        /*public void RegisterCommands() {
             var rejected_commands = new Dictionary<string, CommandInfo>();
             var method_flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
@@ -139,7 +139,7 @@ namespace CommandTerminal
                 }
             }
             HandleRejectedCommands(rejected_commands);
-        }
+        }*/
 
         /// <summary>
         /// Parses an input line into a command and runs that command.

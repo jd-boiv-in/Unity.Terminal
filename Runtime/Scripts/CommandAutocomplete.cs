@@ -7,6 +7,12 @@ namespace CommandTerminal
         List<string> known_words = new List<string>();
         List<string> buffer = new List<string>();
 
+        public void Clear()
+        {
+            known_words.Clear();
+            buffer.Clear();
+        }
+        
         public void Register(string word) {
             known_words.Add(word.ToLower());
         }

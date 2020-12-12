@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Reflection;
 
 namespace CommandTerminal
@@ -27,4 +27,4 @@ namespace CommandTerminal
             Name = command_name;
         }
     }
-}
+}*/

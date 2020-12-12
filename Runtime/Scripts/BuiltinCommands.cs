@@ -6,12 +6,26 @@ namespace CommandTerminal
 {
     public static class BuiltinCommands
     {
-        [RegisterCommand(Help = "Clear the command console", MaxArgCount = 0)]
+        public static void RegisterManually()
+        {
+            Terminal.Shell.AddCommand("clear", CommandClear, 0, 0, "Clear the command console");
+            Terminal.Shell.AddCommand("help", CommandHelp, 0, 1, "Display help information about a command");
+            Terminal.Shell.AddCommand("time", CommandTime, 0, 1, "Time the execution of a command");
+            
+#if DEBUG
+            Terminal.Shell.AddCommand("trace", CommandTrace, 0, 0, "Output the stack trace of the previous message");
+#endif
+            
+            Terminal.Shell.AddCommand("set", CommandSet, 0, -1, "List all variables or set a variable value");
+            Terminal.Shell.AddCommand("quit", CommandQuit, 0, 0, "Quit running application");
+        }
+        
+        //[RegisterCommand(Help = "Clear the command console", MaxArgCount = 0)]
         static void CommandClear(CommandArg[] args) {
             Terminal.Buffer.Clear();
         }
 
-        [RegisterCommand(Help = "Display help information about a command", MaxArgCount = 1)]
+        //[RegisterCommand(Help = "Display help information about a command", MaxArgCount = 1)]
         static void CommandHelp(CommandArg[] args) {
             if (args.Length == 0) {
                 foreach (var command in Terminal.Shell.Commands) {
@@ -38,7 +52,7 @@ namespace CommandTerminal
             }
         }
 
-        [RegisterCommand(Help = "Time the execution of a command", MinArgCount = 1)]
+        //[RegisterCommand(Help = "Time the execution of a command", MinArgCount = 1)]
         static void CommandTime(CommandArg[] args) {
             var sw = new Stopwatch();
             sw.Start();
@@ -49,13 +63,13 @@ namespace CommandTerminal
             Terminal.Log("Time: {0}ms", (double)sw.ElapsedTicks / 10000);
         }
 
-        [RegisterCommand(Help = "Output message")]
-        static void CommandPrint(CommandArg[] args) {
-            Terminal.Log(JoinArguments(args));
-        }
+        //[RegisterCommand(Help = "Output message")]
+        //static void CommandPrint(CommandArg[] args) {
+        //    Terminal.Log(JoinArguments(args));
+        //}
 
     #if DEBUG
-        [RegisterCommand(Help = "Output the stack trace of the previous message", MaxArgCount = 0)]
+        //[RegisterCommand(Help = "Output the stack trace of the previous message", MaxArgCount = 0)]
         static void CommandTrace(CommandArg[] args) {
             int log_count = Terminal.Buffer.Logs.Count;
 
@@ -74,7 +88,7 @@ namespace CommandTerminal
         }
     #endif
 
-        [RegisterCommand(Help = "List all variables or set a variable value")]
+        //[RegisterCommand(Help = "List all variables or set a variable value")]
         static void CommandSet(CommandArg[] args) {
             if (args.Length == 0) {
                 foreach (var kv in Terminal.Shell.Variables) {
@@ -92,10 +106,10 @@ namespace CommandTerminal
             Terminal.Shell.SetVariable(variable_name, JoinArguments(args, 1));
         }
 
-        [RegisterCommand(Help = "No operation")]
-        static void CommandNoop(CommandArg[] args) { }
+        //[RegisterCommand(Help = "No operation")]
+        //static void CommandNoop(CommandArg[] args) { }
 
-        [RegisterCommand(Help = "Quit running application", MaxArgCount = 0)]
+        //[RegisterCommand(Help = "Quit running application", MaxArgCount = 0)]
         static void CommandQuit(CommandArg[] args) {
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;

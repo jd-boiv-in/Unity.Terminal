@@ -29,7 +29,7 @@ namespace CommandTerminal
 
         [SerializeField] string ToggleHotkey      = "`";
         [SerializeField] string ToggleFullHotkey  = "#`";
-        [SerializeField] int BufferSize           = 512;
+        //[SerializeField] int BufferSize           = 512;
 
         [Header("Input")]
         [SerializeField] Font ConsoleFont;
@@ -54,7 +54,7 @@ namespace CommandTerminal
         TextEditor editor_state;
         bool input_fix;
         bool move_cursor;
-        bool initial_open; // Used to focus on TextField when console opens
+        public bool initial_open; // Used to focus on TextField when console opens
         Rect window;
         float current_open_t;
         float open_target;
@@ -68,11 +68,20 @@ namespace CommandTerminal
         Texture2D background_texture;
         Texture2D input_background_texture;
 
-        public static CommandLog Buffer { get; private set; }
-        public static CommandShell Shell { get; private set; }
-        public static CommandHistory History { get; private set; }
-        public static CommandAutocomplete Autocomplete { get; private set; }
+        public static readonly CommandLog Buffer = new CommandLog(512);
+        public static readonly CommandShell Shell = new CommandShell();
+        public static readonly CommandHistory History = new CommandHistory();
+        public static readonly CommandAutocomplete Autocomplete = new CommandAutocomplete();
 
+        public static void Clear()
+        {
+            Buffer.Clear();
+            Shell.Commands.Clear();
+            Shell.Variables.Clear();
+            History.Clear();
+            Autocomplete.Clear();
+        }
+        
         public static bool IssuedError {
             get { return Shell.IssuedErrorMessage != null; }
         }
@@ -132,11 +141,6 @@ namespace CommandTerminal
         }
 
         void OnEnable() {
-            Buffer = new CommandLog(BufferSize);
-            Shell = new CommandShell();
-            History = new CommandHistory();
-            Autocomplete = new CommandAutocomplete();
-
             // Hook Unity log events
             Application.logMessageReceivedThreaded += HandleUnityLog;
         }
@@ -159,7 +163,7 @@ namespace CommandTerminal
             SetupInput();
             SetupLabels();
 
-            Shell.RegisterCommands();
+            //Shell.RegisterCommands();
 
             if (IssuedError) {
                 Log(TerminalLogType.Error, "Error: {0}", Shell.IssuedErrorMessage);
@@ -184,6 +188,7 @@ namespace CommandTerminal
             }
 
             if (IsClosed) {
+                gameObject.SetActive(false);
                 return;
             }
 
@@ -383,7 +388,7 @@ namespace CommandTerminal
         }
 
         void HandleUnityLog(string message, string stack_trace, LogType type) {
-            Buffer.HandleLog(message, stack_trace, (TerminalLogType)type);
+            //Buffer.HandleLog(message, stack_trace, (TerminalLogType)type);
             scroll_position.y = int.MaxValue;
         }
 
