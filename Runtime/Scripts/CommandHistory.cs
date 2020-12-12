@@ -4,7 +4,7 @@ namespace CommandTerminal
 {
     public class CommandHistory
     {
-        List<string> history = new List<string>();
+        List<string> history = new List<string>(100);
         int position;
 
         public void Push(string command_string) {

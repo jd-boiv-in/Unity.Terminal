@@ -23,7 +23,7 @@ namespace CommandTerminal
 
     public class CommandLog
     {
-        List<LogItem> logs = new List<LogItem>();
+        List<LogItem> logs = new List<LogItem>(512);
         int max_items;
 
         public List<LogItem> Logs {
@@ -39,13 +39,11 @@ namespace CommandTerminal
         }
 
         public void HandleLog(string message, string stack_trace, TerminalLogType type) {
-            LogItem log = new LogItem() {
+            logs.Add(new LogItem() {
                 message = message,
                 stack_trace = stack_trace,
                 type = type
-            };
-
-            logs.Add(log);
+            });
 
             if (logs.Count > max_items) {
                 logs.RemoveAt(0);

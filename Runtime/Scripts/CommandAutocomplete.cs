@@ -4,8 +4,8 @@ namespace CommandTerminal
 {
     public class CommandAutocomplete
     {
-        List<string> known_words = new List<string>();
-        List<string> buffer = new List<string>();
+        List<string> known_words = new List<string>(100);
+        List<string> buffer = new List<string>(100);
 
         public void Clear()
         {
