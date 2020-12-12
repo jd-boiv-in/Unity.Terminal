@@ -14,6 +14,11 @@ namespace CommandTerminal
 
     public class Terminal : MonoBehaviour
     {
+#if UNITY_WEBGL
+        [DllImport("__Internal")]
+        public static extern void CopyPasteReader(string gObj, string vName);
+#endif
+        
         [Header("Window")]
         [Range(0, 1)]
         [SerializeField]
@@ -261,6 +266,10 @@ namespace CommandTerminal
                 move_cursor = true;
             } else if (Event.current.Equals(Event.KeyboardEvent("down"))) {
                 command_text = History.Next();
+#if UNITY_WEBGL
+            } else if (Event.current.Equals(Event.KeyboardEvent("#insert"))) {
+                CopyPasteReader("Terminal", "Paste");
+#endif
             } else if (Event.current.Equals(Event.KeyboardEvent(ToggleHotkey))) {
                 ToggleState(TerminalState.OpenSmall);
             } else if (Event.current.Equals(Event.KeyboardEvent(ToggleFullHotkey))) {
@@ -390,6 +399,11 @@ namespace CommandTerminal
         void HandleUnityLog(string message, string stack_trace, LogType type) {
             //Buffer.HandleLog(message, stack_trace, (TerminalLogType)type);
             scroll_position.y = int.MaxValue;
+        }
+        
+        public void Paste(string data)
+        {
+            command_text += data;
         }
 
         Color GetLogColor(TerminalLogType type) {
