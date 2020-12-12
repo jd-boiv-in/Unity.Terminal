@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Text;
 using System.Collections;
 using UnityEngine.Assertions;
+using System.Runtime.InteropServices;
 
 namespace CommandTerminal
 {
