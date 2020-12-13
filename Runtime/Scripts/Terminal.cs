@@ -269,7 +269,7 @@ namespace CommandTerminal
                 command_text = History.Next();
 #if UNITY_WEBGL
             } else if (Event.current.type == EventType.KeyUp && Event.current.shift && Event.current.keyCode == KeyCode.Insert) {
-                Debug.Log("Terminal: " + Event.current.toString());
+                Debug.Log("Terminal Paste");
                 CopyPasteReader("Terminal", "Paste");
 #endif
             } else if (Event.current.Equals(Event.KeyboardEvent(ToggleHotkey))) {
