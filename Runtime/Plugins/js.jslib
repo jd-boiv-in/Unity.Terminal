@@ -2,6 +2,8 @@ mergeInto(LibraryManager.library, {
 
     CopyPasteReader: function(gObj, vName)
     {
+        console.log('CopyPasteReader');
+
         var gameInstance = window.unityInstance;
         var gameObjectName = UTF8ToString(gObj);
         var voidName = UTF8ToString(vName);
