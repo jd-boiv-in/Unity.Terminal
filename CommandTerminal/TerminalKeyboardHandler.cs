@@ -30,37 +30,42 @@ namespace CommandTerminal
         {
             // key presses won't be registered here while console is open and the input
             // field has focus, so they're handled in Terminal.OnGUI/DrawConsole
-            if (Input.GetKeyDown(terminal.ToggleHotkey))
+            var numOfToggleHotkeys = terminal.ToggleHotkeys.Length;
+            for (int i = 0; i < numOfToggleHotkeys; i++)
             {
-                bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-
-                if (!terminal.enabled)
+                var toggleHotkey = terminal.ToggleHotkeys[i];
+                if (Input.GetKeyDown(toggleHotkey))
                 {
-                    terminal.enabled = true;
+                    bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
-                    if (shift)
+                    if (!terminal.enabled)
                     {
-                        terminal.SetState(TerminalState.OpenFull);
+                        terminal.enabled = true;
+
+                        if (shift)
+                        {
+                            terminal.SetState(TerminalState.OpenFull);
+                        }
+                        else
+                        {
+                            terminal.SetState(TerminalState.OpenSmall);
+                        }
+
+                        terminal.initial_open = true;
                     }
                     else
                     {
-                        terminal.SetState(TerminalState.OpenSmall);
-                    }
+                        // this is only entered when console is open and
+                        // the input field has lost focus
 
-                    terminal.initial_open = true;
-                }
-                else
-                {
-                    // this is only entered when console is open and
-                    // the input field has lost focus
-
-                    if (shift)
-                    {
-                        terminal.ToggleState(TerminalState.OpenFull);
-                    }
-                    else
-                    {
-                        terminal.SetState(TerminalState.Close);
+                        if (shift)
+                        {
+                            terminal.ToggleState(TerminalState.OpenFull);
+                        }
+                        else
+                        {
+                            terminal.SetState(TerminalState.Close);
+                        }
                     }
                 }
             }
