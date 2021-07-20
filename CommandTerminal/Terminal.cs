@@ -27,8 +27,7 @@ namespace CommandTerminal
         [SerializeField]
         float ToggleSpeed = 360;
 
-        [SerializeField] internal string ToggleHotkey      = "`";
-        [SerializeField] internal string ToggleFullHotkey  = "#`";
+        [SerializeField] internal KeyCode[] ToggleHotkeys = new KeyCode[] { KeyCode.BackQuote };
         [SerializeField] internal int BufferSize           = 512;
 
         [Header("Input")]
@@ -144,7 +143,10 @@ namespace CommandTerminal
 
             command_text = "";
             cached_command_text = command_text;
-            Assert.AreNotEqual(ToggleHotkey.ToLower(), "return", "Return is not a valid ToggleHotkey");
+            foreach (var toggleHotkey in ToggleHotkeys)
+            {
+                Assert.AreNotEqual(toggleHotkey, KeyCode.Return, "Return is not a valid ToggleHotkey");
+            }
 
             SetupWindow();
             SetupInput();
@@ -246,10 +248,18 @@ namespace CommandTerminal
                 move_cursor = true;
             } else if (Event.current.Equals(Event.KeyboardEvent("down"))) {
                 command_text = History.Next();
-            } else if (Event.current.Equals(Event.KeyboardEvent(ToggleHotkey))) {
-                ToggleState(TerminalState.OpenSmall);
-            } else if (Event.current.Equals(Event.KeyboardEvent(ToggleFullHotkey))) {
-                ToggleState(TerminalState.OpenFull);
+            } else if (Event.current.type == EventType.KeyDown) {
+                foreach (var toggleHotKey in ToggleHotkeys) {
+                    if (Event.current.keyCode == toggleHotKey) {
+                        if (Event.current.shift) {
+                            ToggleState(TerminalState.OpenFull);
+                        } else {
+                            ToggleState(TerminalState.OpenSmall);
+                        }
+
+                        break;
+                    }
+                }
             } else if (Event.current.Equals(Event.KeyboardEvent("tab"))) {
                 CompleteCommand();
                 move_cursor = true; // Wait till next draw call
