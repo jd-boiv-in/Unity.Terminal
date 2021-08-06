@@ -267,7 +267,7 @@ namespace CommandTerminal
                 move_cursor = true;
             } else if (Event.current.Equals(Event.KeyboardEvent("down"))) {
                 command_text = History.Next();
-#if UNITY_WEBGL
+#if UNITY_WEBGL && TERMINAL_JS
             } else if (Event.current.type == EventType.KeyUp && Event.current.shift && Event.current.keyCode == KeyCode.Insert) {
                 Debug.Log("Terminal Paste");
                 CopyPasteReader("Terminal", "Paste");
