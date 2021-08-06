@@ -248,6 +248,9 @@ namespace CommandTerminal
                 move_cursor = true;
             } else if (Event.current.Equals(Event.KeyboardEvent("down"))) {
                 command_text = History.Next();
+            } else if (Event.current.Equals(Event.KeyboardEvent("tab"))) {
+                CompleteCommand();
+                move_cursor = true; // Wait till next draw call
             } else if (Event.current.type == EventType.KeyDown) {
                 foreach (var toggleHotKey in ToggleHotkeys) {
                     if (Event.current.keyCode == toggleHotKey) {
@@ -260,9 +263,6 @@ namespace CommandTerminal
                         break;
                     }
                 }
-            } else if (Event.current.Equals(Event.KeyboardEvent("tab"))) {
-                CompleteCommand();
-                move_cursor = true; // Wait till next draw call
             }
 
             GUILayout.BeginHorizontal();
