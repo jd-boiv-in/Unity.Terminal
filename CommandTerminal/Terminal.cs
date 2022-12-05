@@ -23,7 +23,7 @@ namespace CommandTerminal
         [Range(0, 1)]
         float SmallTerminalRatio = 0.33f;
 
-        [Range(100, 1000)]
+        [Range(100, 6000)]
         [SerializeField]
         float ToggleSpeed = 360;
 
