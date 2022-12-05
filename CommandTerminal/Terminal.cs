@@ -31,7 +31,7 @@ namespace CommandTerminal
         [SerializeField] internal int BufferSize           = 512;
 
         [Header("Input")]
-        [SerializeField] Font ConsoleFont;
+        [SerializeField] protected Font ConsoleFont;
         [SerializeField] string InputCaret        = ">";
         [SerializeField] bool ShowGUIButtons;
         [SerializeField] bool RightAlignButtons;
@@ -225,7 +225,7 @@ namespace CommandTerminal
             input_style.normal.background = input_background_texture;
         }
 
-        void DrawConsole(int Window2D) {
+        protected virtual void DrawConsole(int Window2D) {
             GUILayout.BeginVertical();
 
             scroll_position = GUILayout.BeginScrollView(scroll_position, false, false, GUIStyle.none, GUIStyle.none);
