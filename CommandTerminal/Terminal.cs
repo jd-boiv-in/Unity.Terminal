@@ -366,6 +366,8 @@ namespace CommandTerminal
                 // Print possible completions
                 var log_buffer = new StringBuilder();
 
+                log_buffer.Append("\n");
+
                 foreach (string completion in completion_buffer) {
                     log_buffer.Append(completion.PadRight(format_width + 4));
                 }
