@@ -1,0 +1,21 @@
+{
+  "name": "com.stillwwater.command-terminal",
+  "version": "1.0.2",
+  "displayName": "Command Terminal",
+  "description": "In-game console (fork by bgr)",
+  "unity": "2019.4",
+  "dependencies": {
+  },
+  "keywords": [
+    "console",
+    "command",
+    "terminal"
+  ],
+  "author": {
+    "name": "Stillwwater",
+    "email": "stillwwater@gmail.com"
+  },
+  "type": "library",
+  "hideInEditor": false,
+  "samples": []
+}
