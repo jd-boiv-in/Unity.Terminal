@@ -97,8 +97,44 @@ namespace CommandTerminal
             var rejected_commands = new Dictionary<string, CommandInfo>();
             var method_flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
+            string[] skip =
+            {
+                "mscorlib",
+                "Unity.",
+                "UnityEditor",
+                "UnityEngine",
+                "System",
+                "Mono",
+                "unityplastic",
+                "nunit.",
+                "netstandard",
+                "JetBrains",
+                "Newtonsoft",
+                "Microsoft",
+                "Oculus",
+                "Facepunch",
+                "log4net",
+                "ExCSS",
+                "UniRx",
+                "UniTask",
+                "NaughtyAttributes",
+            };
+
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
+                // skip assemblies that are known not to have any RegisterCommand attributes or are known to throw
+                // exceptions in the try-catch block below (e.g. JetBrains.Rider)
+                bool shouldSkip = false;
+                foreach (string skipPrefix in skip)
+                {
+                    if (assembly.FullName.StartsWith(skipPrefix))
+                    {
+                        shouldSkip = true;
+                        break;
+                    }
+                }
+                if (shouldSkip) continue;
+
                 foreach (var type in assembly.GetTypes())
                 {
                     foreach (var method in type.GetMethods(method_flags))
