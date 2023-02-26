@@ -27,7 +27,7 @@ namespace CommandTerminal
         [SerializeField]
         float ToggleSpeed = 360;
 
-        [SerializeField] internal KeyCode[] ToggleHotkeys = new KeyCode[] { KeyCode.BackQuote };
+        [SerializeField] public KeyCode[] ToggleHotkeys = new KeyCode[] { KeyCode.BackQuote };
         [SerializeField] internal int BufferSize           = 512;
 
         [Header("Input")]
