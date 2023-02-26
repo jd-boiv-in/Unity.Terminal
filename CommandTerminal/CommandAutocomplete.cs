@@ -19,7 +19,7 @@ namespace CommandTerminal
             {
                 known = kv.Key;
 
-                if (known.StartsWith(partial_word)) {
+                if (known.Contains(partial_word)) {
                     buffer.Add(kv.Value.name);
 
                     if (known.Length > format_width) {
