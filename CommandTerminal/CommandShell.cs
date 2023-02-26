@@ -285,7 +285,7 @@ namespace CommandTerminal
             commands.Add(info.name.ToUpper(), info);
         }
 
-        public void AddCommand(string name, Action<CommandArg[]> proc, int min_args = 0, int max_args = -1, string help = "", string hint = null, bool secret = false) {
+        public CommandInfo AddCommand(string name, Action<CommandArg[]> proc, int min_args = 0, int max_args = -1, string help = "", string hint = null, bool secret = false) {
             var info = new CommandInfo() {
                 name = name,
                 proc = proc,
@@ -297,6 +297,7 @@ namespace CommandTerminal
             };
 
             AddCommand(info);
+            return info;
         }
 
         public void SetVariable(string name, string value) {
