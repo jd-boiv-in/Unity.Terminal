@@ -4,22 +4,23 @@ namespace CommandTerminal
 {
     public class CommandAutocomplete
     {
-        List<string> known_words = new List<string>();
+        Dictionary<string, CommandInfo> known_words = new Dictionary<string, CommandInfo>();
         List<string> buffer = new List<string>();
 
-        public void Register(string word) {
-            known_words.Add(word.ToLower());
+        public void Register(CommandInfo command) {
+            known_words.Add(command.name.ToLower(), command);
         }
 
         public string[] Complete(ref string text, ref int format_width) {
             string partial_word = EatLastWord(ref text).ToLower();
             string known;
 
-            for (int i = 0; i < known_words.Count; i++) {
-                known = known_words[i];
+            foreach (var kv in known_words)
+            {
+                known = kv.Key;
 
                 if (known.StartsWith(partial_word)) {
-                    buffer.Add(known);
+                    buffer.Add(kv.Value.name);
 
                     if (known.Length > format_width) {
                         format_width = known.Length;

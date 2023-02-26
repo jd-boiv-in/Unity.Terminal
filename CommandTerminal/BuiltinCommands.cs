@@ -16,7 +16,7 @@ namespace CommandTerminal
             if (args.Length == 0) {
                 foreach (var command in Terminal.Shell.Commands) {
                     if(!command.Value.secret)
-                        Terminal.Log("{0}: {1}", command.Key.PadRight(16), command.Value.help);
+                        Terminal.Log("{0}: {1}", command.Value.name.PadRight(16), command.Value.help);
                 }
                 return;
             }

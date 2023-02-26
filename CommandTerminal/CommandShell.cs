@@ -8,6 +8,7 @@ namespace CommandTerminal
 {
     public struct CommandInfo
     {
+        public string name;
         public Action<CommandArg[]> proc;
         public int max_arg_count;
         public int min_arg_count;
@@ -274,19 +275,19 @@ namespace CommandTerminal
             command.proc(arguments);
         }
 
-        public void AddCommand(string name, CommandInfo info) {
-            name = name.ToUpper();
+        public void AddCommand(CommandInfo info) {
 
-            if (commands.ContainsKey(name)) {
-                IssueErrorMessage("Command {0} is already defined.", name);
+            if (commands.ContainsKey(info.name.ToUpper())) {
+                IssueErrorMessage("Command {0} is already defined.", info.name);
                 return;
             }
 
-            commands.Add(name, info);
+            commands.Add(info.name.ToUpper(), info);
         }
 
         public void AddCommand(string name, Action<CommandArg[]> proc, int min_args = 0, int max_args = -1, string help = "", string hint = null, bool secret = false) {
             var info = new CommandInfo() {
+                name = name,
                 proc = proc,
                 min_arg_count = min_args,
                 max_arg_count = max_args,
@@ -295,7 +296,7 @@ namespace CommandTerminal
                 secret = secret,
             };
 
-            AddCommand(name, info);
+            AddCommand(info);
         }
 
         public void SetVariable(string name, string value) {

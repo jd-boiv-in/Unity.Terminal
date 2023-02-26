@@ -160,7 +160,7 @@ namespace CommandTerminal
 
             foreach (var command in Shell.Commands) {
                 if(!command.Value.secret)
-                    Autocomplete.Register(command.Key);
+                    Autocomplete.Register(command.Value);
             }
         }
 
