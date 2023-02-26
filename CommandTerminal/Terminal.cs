@@ -96,6 +96,7 @@ namespace CommandTerminal
             switch (new_state) {
                 case TerminalState.Close: {
                     open_target = 0;
+                    editor_state = null;
                     break;
                 }
                 case TerminalState.OpenSmall: {
