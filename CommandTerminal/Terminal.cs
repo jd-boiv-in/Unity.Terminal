@@ -326,6 +326,34 @@ namespace CommandTerminal
                 label_style.normal.textColor = i == completion_index ? WarningColor : ForegroundColor;
                 GUILayout.Label(completion_buffer[i], label_style);
             }
+
+            label_style.normal.textColor = InputColor;
+
+            if (Shell.Commands.TryGetValue(completion_buffer[completion_index].ToUpper(), out var command))
+            {
+                GUILayout.Label("", label_style);
+
+                if (!string.IsNullOrEmpty(command.help))
+                {
+                    GUILayout.Label(command.help, label_style);
+                }
+                // there's also a command.hint field, but it doesn't seem to be used anywhere
+
+                string args;
+                if (command.min_arg_count == command.max_arg_count)
+                    args = $"{command.min_arg_count} args";
+                else if (command.max_arg_count >= 0)
+                    args = $"{command.min_arg_count} - {command.max_arg_count} args";
+                else
+                    args = $"{command.min_arg_count}+ args";
+
+                GUILayout.Label($"  [{args}]", label_style);
+            }
+
+            // scroll to bottom but only immediately after keypress, otherwise you wouldn't be able to scroll up
+            if (Event.current.Equals(Event.KeyboardEvent("tab"))) {
+                scroll_position.y = int.MaxValue;
+            }
         }
 
         void DrawGUIButtons() {
