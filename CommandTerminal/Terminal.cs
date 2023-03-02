@@ -242,6 +242,11 @@ namespace CommandTerminal
             }
             GUILayout.EndScrollView();
 
+            // scroll to bottom but only immediately after keypress, otherwise you wouldn't be able to scroll up
+            if (IsTabOrShiftTab) {
+                scroll_position.y = int.MaxValue;
+            }
+
             if (move_cursor) {
                 CursorToEnd();
                 move_cursor = false;
@@ -262,15 +267,12 @@ namespace CommandTerminal
             } else if (Event.current.Equals(Event.KeyboardEvent("down"))) {
                 last_input_was_tab = false;
                 command_text = History.Next();
-            } else if (Event.current.Equals(Event.KeyboardEvent("tab"))) {
+            } else if (IsTabOrShiftTab) {
                 last_input_was_tab = true;
-                CompleteCommand();
+                CompleteCommand(Event.current.shift);
                 move_cursor = true; // Wait till next draw call
-                // when this branch executes, Event.current.KeyCode is 'Tab' and Event.current.character is '\0', but in
-                // the same frame this method gets executed again, with KeyCode being 'None' and character being '\t',
-                // so we need to guard against '\t' in the branch below
             } else if (Event.current.type == EventType.KeyDown && Event.current.character != '\t') {
-                last_input_was_tab = false;
+                if (!Event.current.shift) last_input_was_tab = false;  // allow shift-tab to cycle completions backwards
                 foreach (var toggleHotKey in ToggleHotkeys) {
                     if (Event.current.keyCode == toggleHotKey) {
                         if (Event.current.shift) {
@@ -349,11 +351,6 @@ namespace CommandTerminal
 
                 GUILayout.Label($"  [{args}]", label_style);
             }
-
-            // scroll to bottom but only immediately after keypress, otherwise you wouldn't be able to scroll up
-            if (Event.current.Equals(Event.KeyboardEvent("tab"))) {
-                scroll_position.y = int.MaxValue;
-            }
         }
 
         void DrawGUIButtons() {
@@ -407,7 +404,7 @@ namespace CommandTerminal
             scroll_position.y = int.MaxValue;
         }
 
-        void CompleteCommand() {
+        void CompleteCommand(bool backwards) {
             string head_text;
 
             if (Autocomplete.lastInput != null) {
@@ -416,7 +413,7 @@ namespace CommandTerminal
                 head_text = command_text;
             }
 
-            (string[] buffer, int index) = Autocomplete.Complete(head_text);
+            (string[] buffer, int index) = Autocomplete.Complete(head_text, backwards);
             int completion_length = buffer.Length;
 
             if (completion_length != 0) {
@@ -455,5 +452,8 @@ namespace CommandTerminal
                 default: return ErrorColor;
             }
         }
+
+        bool IsTabOrShiftTab => Event.current.Equals(Event.KeyboardEvent("tab"))
+                             || (Event.current.type == EventType.KeyDown && Event.current.shift && Event.current.character == '\t');
     }
 }

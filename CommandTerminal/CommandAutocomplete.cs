@@ -14,7 +14,7 @@ namespace CommandTerminal
             known_words.Add(command.name.ToLower(), command);
         }
 
-        public (string[] all, int index) Complete(string inputText)
+        public (string[] all, int index) Complete(string inputText, bool backwards = false)
         {
             inputText = inputText.ToLower();
 
@@ -41,8 +41,12 @@ namespace CommandTerminal
             }
             else // Use previous completions
             {
-                lastIndex++;
-                if (lastIndex >= lastResults.Length)
+                lastIndex += backwards ? -1 : 1;
+                if (lastIndex < 0)
+                {
+                    lastIndex = lastResults.Length - 1;
+                }
+                else if (lastIndex >= lastResults.Length)
                 {
                     lastIndex = 0;
                 }
