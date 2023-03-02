@@ -6,67 +6,55 @@ namespace CommandTerminal
     {
         Dictionary<string, CommandInfo> known_words = new Dictionary<string, CommandInfo>();
         List<string> buffer = new List<string>();
+        public string lastInput = null;
+        string[] lastResults = null;
+        int lastIndex = 0;
 
         public void Register(CommandInfo command) {
             known_words.Add(command.name.ToLower(), command);
         }
 
-        public string[] Complete(ref string text, ref int format_width) {
-            string partial_word = EatLastWord(ref text).ToLower();
-            string known;
+        public (string[] all, int index) Complete(string inputText)
+        {
+            inputText = inputText.ToLower();
 
-            foreach (var kv in known_words)
+            if (inputText != lastInput)  // Calculate new completions
             {
-                known = kv.Key;
+                lastIndex = 0;
+                lastInput = inputText;
 
-                if (known.Contains(partial_word)) {
-                    buffer.Add(kv.Value.name);
+                string known;
 
-                    if (known.Length > format_width) {
-                        format_width = known.Length;
+                foreach (var kv in known_words)
+                {
+                    known = kv.Key;
+
+                    if (known.Contains(inputText))
+                    {
+                        buffer.Add(kv.Value.name);
                     }
                 }
+
+                buffer.Sort(Comparator);
+                lastResults = buffer.ToArray();
+                buffer.Clear();
             }
-
-            string[] completions = buffer.ToArray();
-            buffer.Clear();
-
-            text += PartialWord(completions);
-            return completions;
-        }
-
-        string EatLastWord(ref string text) {
-            int last_space = text.LastIndexOf(' ');
-            string result = text.Substring(last_space + 1);
-
-            text = text.Substring(0, last_space + 1); // Remaining (keep space)
-            return result;
-        }
-
-        string PartialWord(string[] words) {
-            if (words.Length == 0) {
-                return "";
-            }
-
-            string first_match = words[0];
-            int partial_length = first_match.Length;
-
-            if (words.Length == 1) {
-                return first_match;
-            }
-
-            foreach (string word in words) {
-                if (partial_length > word.Length) {
-                    partial_length = word.Length;
-                }
-
-                for (int i = 0; i < partial_length; i++) {
-                    if (word[i] != first_match[i]) {
-                        partial_length = i;
-                    }
+            else // Use previous completions
+            {
+                lastIndex++;
+                if (lastIndex >= lastResults.Length)
+                {
+                    lastIndex = 0;
                 }
             }
-            return first_match.Substring(0, partial_length);
+
+            return (lastResults, lastIndex);
+        }
+
+        int Comparator(string x, string y)
+        {
+            // commands that start with the input should come first, or have input closer to beginning
+            return x.ToLower().IndexOf(lastInput) - y.ToLower().IndexOf(lastInput);
         }
     }
 }

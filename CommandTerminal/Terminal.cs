@@ -53,6 +53,9 @@ namespace CommandTerminal
         TextEditor editor_state;
         bool input_fix;
         bool move_cursor;
+        bool last_input_was_tab;
+        string[] completion_buffer;
+        int completion_index;
         internal bool initial_open; // Used to focus on TextField when console opens
         Rect window;
         float current_open_t;
@@ -231,7 +234,12 @@ namespace CommandTerminal
 
             scroll_position = GUILayout.BeginScrollView(scroll_position, false, false, GUIStyle.none, GUIStyle.none);
             GUILayout.FlexibleSpace();
-            DrawLogs();
+            if (completion_buffer != null && last_input_was_tab) {
+                DrawCompletions();
+            }
+            else {
+                DrawLogs();
+            }
             GUILayout.EndScrollView();
 
             if (move_cursor) {
@@ -239,20 +247,30 @@ namespace CommandTerminal
                 move_cursor = false;
             }
 
+
             if (Event.current.Equals(Event.KeyboardEvent("escape"))) {
+                last_input_was_tab = false;
                 SetState(TerminalState.Close);
             } else if (Event.current.Equals(Event.KeyboardEvent("return"))
                 || Event.current.Equals(Event.KeyboardEvent("[enter]"))) {
+                last_input_was_tab = false;
                 EnterCommand();
             } else if (Event.current.Equals(Event.KeyboardEvent("up"))) {
                 command_text = History.Previous();
+                last_input_was_tab = false;
                 move_cursor = true;
             } else if (Event.current.Equals(Event.KeyboardEvent("down"))) {
+                last_input_was_tab = false;
                 command_text = History.Next();
             } else if (Event.current.Equals(Event.KeyboardEvent("tab"))) {
+                last_input_was_tab = true;
                 CompleteCommand();
                 move_cursor = true; // Wait till next draw call
-            } else if (Event.current.type == EventType.KeyDown) {
+                // when this branch executes, Event.current.KeyCode is 'Tab' and Event.current.character is '\0', but in
+                // the same frame this method gets executed again, with KeyCode being 'None' and character being '\t',
+                // so we need to guard against '\t' in the branch below
+            } else if (Event.current.type == EventType.KeyDown && Event.current.character != '\t') {
+                last_input_was_tab = false;
                 foreach (var toggleHotKey in ToggleHotkeys) {
                     if (Event.current.keyCode == toggleHotKey) {
                         if (Event.current.shift) {
@@ -265,6 +283,8 @@ namespace CommandTerminal
                     }
                 }
             }
+
+            if (!last_input_was_tab) Autocomplete.lastInput = null;
 
             GUILayout.BeginHorizontal();
 
@@ -297,6 +317,14 @@ namespace CommandTerminal
             foreach (var log in Buffer.Logs) {
                 label_style.normal.textColor = GetLogColor(log.type);
                 GUILayout.Label(log.message, label_style);
+            }
+        }
+
+        void DrawCompletions() {
+            for (int i = 0; i < completion_buffer.Length; i++)
+            {
+                label_style.normal.textColor = i == completion_index ? WarningColor : ForegroundColor;
+                GUILayout.Label(completion_buffer[i], label_style);
             }
         }
 
@@ -352,28 +380,28 @@ namespace CommandTerminal
         }
 
         void CompleteCommand() {
-            string head_text = command_text;
-            int format_width = 0;
+            string head_text;
 
-            string[] completion_buffer = Autocomplete.Complete(ref head_text, ref format_width);
-            int completion_length = completion_buffer.Length;
+            if (Autocomplete.lastInput != null) {
+                head_text = Autocomplete.lastInput;
+            } else {
+                head_text = command_text;
+            }
+
+            (string[] buffer, int index) = Autocomplete.Complete(head_text);
+            int completion_length = buffer.Length;
 
             if (completion_length != 0) {
-                command_text = head_text;
+                command_text = buffer[index];
             }
 
             if (completion_length > 1) {
-                // Print possible completions
-                var log_buffer = new StringBuilder();
-
-                log_buffer.Append("\n");
-
-                foreach (string completion in completion_buffer) {
-                    log_buffer.Append(completion.PadRight(format_width + 4));
-                }
-
-                Log("{0}", log_buffer);
-                scroll_position.y = int.MaxValue;
+                completion_buffer = buffer;
+                completion_index = index;
+            }
+            else {
+                completion_buffer = null;
+                completion_index = 0;
             }
         }
 
