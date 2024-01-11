@@ -45,15 +45,21 @@ namespace CommandTerminal
                 type = type
             };
 
-            logs.Add(log);
+            lock (logs)
+            {
+                logs.Add(log);
 
-            if (logs.Count > max_items) {
-                logs.RemoveAt(0);
+                if (logs.Count > max_items) {
+                    logs.RemoveAt(0);
+                }
             }
         }
 
         public void Clear() {
-            logs.Clear();
+            lock (logs)
+            {
+                logs.Clear();
+            }
         }
     }
 }
