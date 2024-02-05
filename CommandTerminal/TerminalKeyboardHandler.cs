@@ -18,13 +18,11 @@ namespace CommandTerminal
             Terminal.Autocomplete = new CommandAutocomplete();
 
             // Hook Unity log events
-            Application.logMessageReceived += terminal.HandleUnityLog;
             Application.logMessageReceivedThreaded += terminal.HandleUnityLog;
         }
 
         void OnDisable()
         {
-            Application.logMessageReceived -= terminal.HandleUnityLog;
             Application.logMessageReceivedThreaded -= terminal.HandleUnityLog;
         }
 
