@@ -134,7 +134,7 @@ namespace CommandTerminal
             }
         }
 
-        void Start() {
+        void Awake() {
             if (ConsoleFont == null) {
                 ConsoleFont = Font.CreateDynamicFontFromOSFont("Courier New", 16);
                 Debug.LogWarning("Command Console Warning: Please assign a font.");
