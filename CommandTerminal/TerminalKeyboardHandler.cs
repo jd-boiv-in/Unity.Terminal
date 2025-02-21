@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace CommandTerminal
 {
@@ -34,6 +35,43 @@ namespace CommandTerminal
             for (int i = 0; i < numOfToggleHotkeys; i++)
             {
                 var toggleHotkey = terminal.ToggleHotkeys[i];
+                
+#if ENABLE_INPUT_SYSTEM
+                if (Keyboard.current.backquoteKey.wasPressedThisFrame)
+                {
+                    bool shift = Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed;
+
+                    if (!terminal.enabled)
+                    {
+                        terminal.enabled = true;
+
+                        if (shift)
+                        {
+                            terminal.SetState(TerminalState.OpenFull);
+                        }
+                        else
+                        {
+                            terminal.SetState(TerminalState.OpenSmall);
+                        }
+
+                        terminal.initial_open = true;
+                    }
+                    else
+                    {
+                        // this is only entered when console is open and
+                        // the input field has lost focus
+
+                        if (shift)
+                        {
+                            terminal.ToggleState(TerminalState.OpenFull);
+                        }
+                        else
+                        {
+                            terminal.SetState(TerminalState.Close);
+                        }
+                    }
+                }
+#else
                 if (Input.GetKeyDown(toggleHotkey))
                 {
                     bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
@@ -68,6 +106,7 @@ namespace CommandTerminal
                         }
                     }
                 }
+#endif
             }
         }
     }
