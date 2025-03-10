@@ -1,9 +1,10 @@
 {
   "name": "com.stillwwater.command-terminal",
   "version": "1.0.2",
-  "displayName": "Command Terminal",
-  "description": "In-game console (fork by bgr)",
+  "displayName": "Console",
+  "description": "In-game console",
   "unity": "2019.4",
+  "license": "MIT",
   "dependencies": {
   },
   "keywords": [
