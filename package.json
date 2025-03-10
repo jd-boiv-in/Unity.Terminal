@@ -1,7 +1,7 @@
 {
-  "name": "com.stillwwater.command-terminal",
+  "name": "jd.boiv.in.terminal",
   "version": "1.0.2",
-  "displayName": "Console",
+  "displayName": "Terminal",
   "description": "In-game console",
   "unity": "2019.4",
   "license": "MIT",
