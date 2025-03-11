@@ -49,7 +49,6 @@ namespace CommandTerminal
         [SerializeField] Color WarningColor       = Color.yellow;
         [SerializeField] Color ErrorColor         = Color.red;
 
-        TerminalState state;
         TextEditor editor_state;
         bool input_fix;
         bool move_cursor;
@@ -70,6 +69,9 @@ namespace CommandTerminal
         Texture2D background_texture;
         Texture2D input_background_texture;
 
+        private static TerminalState _state;
+        public static bool IsOpen => _state != TerminalState.Close;
+        
         public static CommandLog Buffer { get; internal set; }
         public static CommandShell Shell { get; internal set; }
         public static CommandHistory History { get; internal set; }
@@ -80,7 +82,7 @@ namespace CommandTerminal
         }
 
         public bool IsClosed {
-            get { return state == TerminalState.Close && Mathf.Approximately(current_open_t, open_target); }
+            get { return _state == TerminalState.Close && Mathf.Approximately(current_open_t, open_target); }
         }
 
         public static void Log(string format, params object[] message) {
@@ -108,7 +110,7 @@ namespace CommandTerminal
                         // Prevent resizing from OpenFull to OpenSmall if window y position
                         // is greater than OpenSmall's target
                         open_target = 0;
-                        state = TerminalState.Close;
+                        _state = TerminalState.Close;
                         return;
                     }
                     real_window_size = open_target;
@@ -123,11 +125,11 @@ namespace CommandTerminal
                 }
             }
 
-            state = new_state;
+            _state = new_state;
         }
 
         public void ToggleState(TerminalState new_state) {
-            if (state == new_state) {
+            if (_state == new_state) {
                 SetState(TerminalState.Close);
             } else {
                 SetState(new_state);
